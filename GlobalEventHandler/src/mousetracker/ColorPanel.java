@@ -9,7 +9,7 @@ package mousetracker;
  *
  * @author Napoleon
  */
-
+import java.io.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -19,8 +19,6 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -32,13 +30,13 @@ import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import lc.kra.system.mouse.GlobalMouseHook;
 import lc.kra.system.mouse.event.GlobalMouseAdapter;
 import lc.kra.system.mouse.event.GlobalMouseEvent;
-import static mousetracker.MouseTracker.panel;
+import static mousetracker.GlobalEventHandler.panel;
 
 /**
  *
  * @author Napoleon
  */
-class ColorPanel extends JPanel{
+class ColorPanel extends JPanel {
 
     private Font customFont;
     private int locX, locY;
@@ -61,8 +59,9 @@ class ColorPanel extends JPanel{
     String events[] = new String[maxLength];
     String eventsTime[] = new String[maxLength];
     
-        public ColorPanel() {
+        public ColorPanel() throws IOException{
 
+            PrintWriter writer = new PrintWriter("output.txt");
             GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook();
             
             keyboardHook.addKeyListener(new GlobalKeyAdapter() {
@@ -70,11 +69,12 @@ class ColorPanel extends JPanel{
 
                 }
 
-                @Override public void keyReleased(GlobalKeyEvent event) {
+                @Override public void keyReleased(GlobalKeyEvent event) {;
                      events[pressed] = Integer.toString((int)event.getVirtualKeyCode());
                      eventsTime[pressed] = Integer.toString((int)(TimeUnit.MILLISECONDS.toSeconds(System.nanoTime() - timeNow)));
                      timeNow = System.nanoTime();
-                     System.out.println(eventsTime[pressed]);
+
+                     writer.println(events[pressed]);
                      pressed++;
                     
                     if(event.getVirtualKeyCode() == 67 && event.isControlPressed() == true && ApplicationOpen == true){
